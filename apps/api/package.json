@@ -7,7 +7,8 @@
     "start": "node dist/server.js",
     "dev": "tsx watch src/app/server.ts",
     "seed": "tsx src/scripts/seed.ts",
-    "test": "vitest run"
+    "test": "vitest run",
+    "dev:local": "tsx watch src/app/server.ts"
   },
   "dependencies": {
     "@customry/contracts": "*",
@@ -33,5 +34,9 @@
     "tsx": "^4.15.2",
     "typescript": "^5.4.5",
     "vitest": "^1.6.0"
-  }
+  },
+  "engines": {
+    "node": ">=18.20.0 <23"
+  },
+  "packageManager": "npm@10"
 }
