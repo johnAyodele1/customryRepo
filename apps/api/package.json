@@ -7,7 +7,8 @@
     "start": "node dist/server.js",
     "dev": "tsx watch src/app/server.ts",
     "seed": "tsx src/scripts/seed.ts",
-    "test": "vitest run"
+    "test": "vitest run",
+    "predev": "npm run build --workspace=@customry/contracts"
   },
   "dependencies": {
     "@customry/contracts": "*",
