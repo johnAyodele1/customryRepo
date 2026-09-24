@@ -3,7 +3,8 @@ import { Sparkles, Eye } from 'lucide-react';
 
 export interface ProductCardProps {
   product: {
-    id: string;
+    id?: string;
+    _id?: string;
     name: string;
     slug: string;
     categoryCode: string;
