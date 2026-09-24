@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "main": "dist/server.js",
   "scripts": {
+    "predev": "npm run build --workspace=@customry/contracts",
     "build": "tsc",
     "start": "node dist/server.js",
     "dev": "tsx watch src/app/server.ts",
