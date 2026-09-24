@@ -363,7 +363,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({
                             disabled={featureProductMutation.isPending}
                             onClick={() =>
                               featureProductMutation.mutate({
-                                productId: p.id,
+                                productId: p._id || p.id,
                                 isFeatured: !p.isFeatured,
                               })
                             }
