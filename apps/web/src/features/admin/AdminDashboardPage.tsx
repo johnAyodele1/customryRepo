@@ -50,7 +50,19 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({
     queryFn: async () => {
       const res = await fetch('/api/admin/dashboard', { headers: authHeaders });
       const data = await res.json();
-      return data.data;
+      return data.data ?? {
+        totalRevenue: 0,
+        totalOrders: 0,
+        pendingOrders: 0,
+        confirmedOrders: 0,
+        processingOrders: 0,
+        completedOrders: 0,
+        cancelledOrders: 0,
+        totalProducts: 0,
+        lowStockProducts: 0,
+        recentOrders: [],
+        recentCustomers: [],
+      };
     },
   });
 
@@ -344,7 +356,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({
                   </thead>
                   <tbody className="divide-y divide-outline-variant/20">
                     {products.map((p: any) => (
-                      <tr key={p.id}>
+                      <tr key={p._id || p.id}>
                         <td className="p-4 font-serif font-semibold text-[#1b1c1c]">{p.name}</td>
                         <td className="p-4 text-[10px] uppercase tracking-wider text-[#7f7668]">{p.categoryCode}</td>
                         <td className="p-4 font-serif font-bold text-[#745a27]">₦{p.basePrice.toLocaleString()}</td>
@@ -381,7 +393,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({
                         <td className="p-4 text-right space-x-2">
                           {p.status !== 'PUBLISHED' && (
                             <button
-                              onClick={() => publishProductMutation.mutate(p.id)}
+                              onClick={() => publishProductMutation.mutate(p._id || p.id)}
                               className="text-[10px] font-bold text-green-700 hover:underline uppercase"
                             >
                               Publish
@@ -389,7 +401,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({
                           )}
                           {p.status !== 'ARCHIVED' && (
                             <button
-                              onClick={() => archiveProductMutation.mutate(p.id)}
+                              onClick={() => archiveProductMutation.mutate(p._id || p.id)}
                               className="text-[10px] font-bold text-red-600 hover:underline uppercase"
                             >
                               Archive
@@ -470,7 +482,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({
                   </thead>
                   <tbody className="divide-y divide-outline-variant/20">
                     {orders.map((o: any) => (
-                      <tr key={o.id}>
+                      <tr key={o._id || o.id}>
                         <td className="p-4 font-mono font-bold text-[#745a27]">{o.orderNumber}</td>
                         <td className="p-4">
                           <div className="font-bold">{o.customer?.fullName}</div>
@@ -488,7 +500,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({
                             value={o.status}
                             onChange={(e) =>
                               updateOrderStatusMutation.mutate({
-                                orderId: o.id,
+                                orderId: o._id || o.id,
                                 status: e.target.value,
                               })
                             }
