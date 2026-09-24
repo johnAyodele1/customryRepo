@@ -145,9 +145,9 @@ export const CategoryPage: React.FC = () => {
           </div>
 
           {featured.length > 0 ? (
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
               {featured.map((product: any) => (
-                <ProductCard key={product.id} product={product} onSelect={openProduct} />
+                <ProductCard key={product._id || product.id} product={product} onSelect={openProduct} />
               ))}
             </div>
           ) : (
@@ -235,7 +235,7 @@ export const CategoryPage: React.FC = () => {
               <div className="py-20 text-center text-sm text-[#7f7668]">Curating the collection...</div>
             ) : (
               <>
-                <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-5 mt-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5 mt-4">
                   {(catalogue?.data || []).map((product: any) => (
                     <ProductCard key={product.id} product={product} onSelect={openProduct} />
                   ))}

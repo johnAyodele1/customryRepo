@@ -111,10 +111,10 @@ export const StorefrontPage: React.FC<StorefrontPageProps> = ({ onOpenAdmin }) =
                   </p>
 
                   {featured.length > 0 ? (
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
                       {featured.map((product: any) => (
                         <ProductCard
-                          key={product.id}
+                          key={product._id || product.id}
                           product={product}
                           onSelect={openProduct}
                         />
