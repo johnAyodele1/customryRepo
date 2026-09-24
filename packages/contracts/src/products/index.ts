@@ -55,6 +55,7 @@ export const ProductSchema = z.object({
   minQuantity: z.number().int().min(1).default(1),
   maxQuantity: z.number().int().min(1).default(100),
   stock: z.number().int().nonnegative().default(0),
+  isFeatured: z.boolean().default(false),
   createdAt: z.string().or(z.date()).optional(),
   updatedAt: z.string().or(z.date()).optional(),
 });
@@ -89,7 +90,24 @@ export const ProductQuerySchema = z.object({
   categoryCode: CategoryCodeSchema.optional(),
   status: ProductStatusSchema.optional(),
   stockStatus: z.enum(['IN_STOCK', 'LOW_STOCK', 'OUT_OF_STOCK']).optional(),
+  minPrice: z.coerce.number().nonnegative().optional(),
+  maxPrice: z.coerce.number().nonnegative().optional(),
   sort: z.string().optional(),
 });
 
 export type ProductQueryInput = z.infer<typeof ProductQuerySchema>;
+
+
+export const FeaturedProductQuerySchema = z.object({
+  categoryCode: CategoryCodeSchema.optional(),
+  limit: z.coerce.number().int().min(1).max(4).default(4),
+});
+
+export type FeaturedProductQueryInput = z.infer<typeof FeaturedProductQuerySchema>;
+
+
+export const SetFeaturedProductSchema = z.object({
+  isFeatured: z.boolean(),
+});
+
+export type SetFeaturedProductInput = z.infer<typeof SetFeaturedProductSchema>;

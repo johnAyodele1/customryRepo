@@ -6,6 +6,7 @@ interface ProductDetailModalProps {
   product: any;
   onClose: () => void;
   onOpenCheckout: () => void;
+  mode?: 'modal' | 'page';
 }
 
 export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
@@ -78,16 +79,21 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-[#1b1c1c]/80 backdrop-blur-md flex items-center justify-center p-4 sm:p-6">
-      <div className="bg-surface text-on-surface max-w-4xl w-full rounded-3xl shadow-2xl overflow-hidden border border-outline-variant relative animate-in fade-in zoom-in-95 duration-200 my-8">
+    <div className={mode === 'modal'
+      ? 'fixed inset-0 z-50 overflow-y-auto bg-[#1b1c1c]/80 backdrop-blur-md flex items-center justify-center p-4 sm:p-6'
+      : 'min-h-[calc(100vh-5rem)] bg-surface text-on-surface py-6 sm:py-10'}>
+      <div className={mode === 'modal'
+        ? 'bg-surface text-on-surface max-w-4xl w-full rounded-3xl shadow-2xl overflow-hidden border border-outline-variant relative animate-in fade-in zoom-in-95 duration-200 my-8'
+        : 'bg-surface text-on-surface max-w-6xl mx-auto w-full overflow-hidden relative px-4 sm:px-6 lg:px-10'}>
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 z-20 p-2 bg-[#1b1c1c]/70 hover:bg-[#1b1c1c] text-white rounded-full transition"
+          className="absolute top-3 right-3 z-20 p-2 bg-[#1b1c1c]/80 hover:bg-[#1b1c1c] text-white rounded-full transition"
+          aria-label={mode === 'modal' ? 'Close product' : 'Back'}
         >
           <X size={20} />
         </button>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 max-h-[85vh] overflow-y-auto">
+        <div className={mode === 'modal' ? 'grid grid-cols-1 md:grid-cols-2 max-h-[85vh] overflow-y-auto' : 'grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-14'}>
           <div className="bg-surface-container p-6 flex items-center justify-center relative">
             <img
               src={
@@ -95,11 +101,11 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
                 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&q=80&w=800'
               }
               alt={product.name}
-              className="w-full max-h-[450px] object-cover rounded-2xl shadow-md"
+              className="w-full h-full max-h-[620px] object-cover rounded-2xl shadow-md"
             />
           </div>
 
-          <div className="p-6 lg:p-8 flex flex-col justify-between space-y-6">
+          <div className="p-2 sm:p-4 lg:p-8 flex flex-col justify-between space-y-6">
             <div>
               <span className="text-xs font-semibold uppercase tracking-[0.2em] text-[#745a27] mb-2 block">
                 {product.categoryCode.replace('_', ' ')}

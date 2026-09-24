@@ -4,30 +4,37 @@ import { useCart } from '../context/CartContext';
 
 interface CartDrawerProps {
   onCheckout: () => void;
+  embedded?: boolean;
 }
 
-export const CartDrawer: React.FC<CartDrawerProps> = ({ onCheckout }) => {
+export const CartDrawer: React.FC<CartDrawerProps> = ({ onCheckout, embedded = false }) => {
   const { items, isCartOpen, closeCart, removeItem, updateQuantity, subtotal } = useCart();
 
-  if (!isCartOpen) return null;
+  if (!isCartOpen && !embedded) return null;
 
   const deliveryFee = subtotal >= 100000 ? 0 : 2500;
   const total = subtotal + deliveryFee;
 
   return (
-    <div className="fixed inset-0 z-50 overflow-hidden bg-[#1b1c1c]/70 backdrop-blur-sm flex justify-end">
-      <div className="w-full max-w-md bg-surface h-full shadow-2xl flex flex-col justify-between border-l border-outline-variant animate-in slide-in-from-right duration-300">
+    <div className={embedded
+      ? 'min-h-[calc(100vh-5rem)] bg-[#f6f3f2] py-6 sm:py-10'
+      : 'fixed inset-0 z-50 overflow-hidden bg-[#1b1c1c]/70 backdrop-blur-sm flex justify-end'}>
+      <div className={embedded
+        ? 'max-w-4xl mx-auto w-full bg-surface min-h-[calc(100vh-8rem)] shadow-sm sm:rounded-3xl overflow-hidden border border-outline-variant/40 flex flex-col justify-between'
+        : 'w-full max-w-md bg-surface h-full shadow-2xl flex flex-col justify-between border-l border-outline-variant animate-in slide-in-from-right duration-300'}>
         <div className="p-6 border-b border-outline-variant/40 flex items-center justify-between bg-[#1b1c1c] text-white">
           <div className="flex items-center gap-2">
             <ShoppingBag size={20} className="text-[#c9a96e]" />
             <h2 className="font-serif text-xl font-semibold">Your Bespoke Bag</h2>
           </div>
-          <button
-            onClick={closeCart}
-            className="p-1.5 text-gray-400 hover:text-white rounded-full transition"
-          >
-            <X size={20} />
-          </button>
+          {!embedded && (
+            <button
+              onClick={closeCart}
+              className="p-1.5 text-gray-400 hover:text-white rounded-full transition"
+            >
+              <X size={20} />
+            </button>
+          )}
         </div>
 
         <div className="flex-1 overflow-y-auto p-6 space-y-6">

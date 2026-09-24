@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
+import { Route, Routes } from 'react-router-dom';
 import { CartProvider } from './features/cart/context/CartContext';
 import { StorefrontPage } from './pages/StorefrontPage';
 import { AdminLoginPage } from './features/admin/AdminLoginPage';
 import { AdminDashboardPage } from './features/admin/AdminDashboardPage';
+import { CategoryPage } from './pages/CategoryPage';
+import { ProductPage } from './pages/ProductPage';
+import { BagPage } from './pages/BagPage';
 
 export const App: React.FC = () => {
   const [view, setView] = useState<'storefront' | 'admin_login' | 'admin_dashboard'>('storefront');
@@ -33,15 +37,25 @@ export const App: React.FC = () => {
   return (
     <CartProvider>
       {view === 'storefront' && (
-        <StorefrontPage
-          onOpenAdmin={() => {
-            if (adminToken && adminUser) {
-              setView('admin_dashboard');
-            } else {
-              setView('admin_login');
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <StorefrontPage
+                onOpenAdmin={() => {
+                  if (adminToken && adminUser) {
+                    setView('admin_dashboard');
+                  } else {
+                    setView('admin_login');
+                  }
+                }}
+              />
             }
-          }}
-        />
+          />
+          <Route path="/categories/:slug" element={<CategoryPage />} />
+          <Route path="/products/:slug" element={<ProductPage />} />
+          <Route path="/bag" element={<BagPage />} />
+        </Routes>
       )}
 
       {view === 'admin_login' && (

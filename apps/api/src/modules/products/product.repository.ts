@@ -11,7 +11,7 @@ export class ProductRepository {
   }
 
   async findMany(query: ProductQueryInput) {
-    const { page, limit, search, categoryCode, status, stockStatus, sort } = query;
+    const { page, limit, search, categoryCode, status, stockStatus, minPrice, maxPrice, sort } = query;
     const filter: Record<string, unknown> = {};
 
     if (status) {
@@ -22,6 +22,13 @@ export class ProductRepository {
 
     if (categoryCode) {
       filter.categoryCode = categoryCode;
+    }
+
+    if (minPrice !== undefined || maxPrice !== undefined) {
+      filter.basePrice = {
+        ...(minPrice !== undefined ? { $gte: minPrice } : {}),
+        ...(maxPrice !== undefined ? { $lte: maxPrice } : {}),
+      };
     }
 
     if (search) {
@@ -66,6 +73,27 @@ export class ProductRepository {
         totalPages: Math.ceil(total / limit) || 1,
       },
     };
+  }
+
+  async findFeatured(categoryCode?: ProductQueryInput['categoryCode'], limit = 4) {
+    const filter: Record<string, unknown> = {
+      status: 'PUBLISHED',
+      isFeatured: true,
+    };
+
+    if (categoryCode) filter.categoryCode = categoryCode;
+
+    return ProductModel.find(filter)
+      .sort({ createdAt: -1 })
+      .limit(limit);
+  }
+
+  async countFeatured(categoryCode: ProductQueryInput['categoryCode']) {
+    return ProductModel.countDocuments({ categoryCode, isFeatured: true });
+  }
+
+  async setFeatured(id: string, isFeatured: boolean) {
+    return ProductModel.findByIdAndUpdate(id, { isFeatured }, { new: true });
   }
 
   async create(data: CreateProductInput): Promise<IProductDocument> {
