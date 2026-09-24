@@ -13,8 +13,9 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
   product,
   onClose,
   onOpenCheckout,
+  mode = 'modal',
 }) => {
-  const { addItem } = useCart();
+  const { addItem, openCart } = useCart();
   const [selectedVariantId, setSelectedVariantId] = useState<string | undefined>(
     product.variants?.[0]?.id
   );
@@ -65,7 +66,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
     }
 
     addItem({
-      productId: product.id,
+      productId: product._id || product.id,
       variantId: selectedVariantId,
       productName: product.name,
       variantName: selectedVariant?.name,
@@ -75,7 +76,12 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
       imageUrl: product.images[0],
     });
 
-    onClose();
+    if (mode === 'modal') {
+      onClose();
+      openCart();
+    } else {
+      onOpenCheckout();
+    }
   };
 
   return (
