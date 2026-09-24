@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ShoppingBag, Menu, X, Shield, PackageCheck } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useCart } from '../../features/cart/context/CartContext';
 
 interface NavbarProps {
@@ -11,13 +11,18 @@ interface NavbarProps {
 export const Navbar: React.FC<NavbarProps> = ({ onOpenTracking, onOpenAdmin }) => {
   const { totalCount, openCart } = useCart();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const openBag = () => {
-    if (window.matchMedia('(max-width: 1023px)').matches) {
-      navigate('/bag');
+    const isDesktop = window.matchMedia('(min-width: 1024px)').matches;
+    const isHome = location.pathname === '/';
+
+    if (isDesktop && isHome) {
+      openCart();
       return;
     }
-    openCart();
+
+    navigate('/bag');
   };
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
