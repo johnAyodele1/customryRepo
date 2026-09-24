@@ -40,6 +40,7 @@ export interface IProductDocument extends Document {
   minQuantity: number;
   maxQuantity: number;
   stock: number;
+  isFeatured: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -100,8 +101,12 @@ const productSchema = new Schema<IProductDocument>(
     minQuantity: { type: Number, default: 1, min: 1 },
     maxQuantity: { type: Number, default: 100, min: 1 },
     stock: { type: Number, default: 0, min: 0 },
+    isFeatured: { type: Boolean, default: false, index: true },
   },
   { timestamps: true }
 );
+
+productSchema.index({ categoryCode: 1, isFeatured: 1, status: 1 });
+productSchema.index({ categoryCode: 1, basePrice: 1, status: 1 });
 
 export const ProductModel = model<IProductDocument>('Product', productSchema);

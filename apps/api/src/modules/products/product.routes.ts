@@ -7,6 +7,8 @@ import {
   CreateProductSchema,
   UpdateProductSchema,
   ProductQuerySchema,
+  FeaturedProductQuerySchema,
+  SetFeaturedProductSchema,
 } from '@customry/contracts';
 
 const router = Router();
@@ -15,6 +17,12 @@ router.get(
   '/',
   validateRequest({ query: ProductQuerySchema }),
   asyncHandler(productController.getProducts.bind(productController))
+);
+
+router.get(
+  '/featured',
+  validateRequest({ query: FeaturedProductQuerySchema }),
+  asyncHandler(productController.getFeaturedProducts.bind(productController))
 );
 
 router.get(
@@ -41,6 +49,14 @@ router.patch(
   requireAdmin,
   validateRequest({ body: UpdateProductSchema }),
   asyncHandler(productController.updateProduct.bind(productController))
+);
+
+router.patch(
+  '/:id/featured',
+  requireAuth,
+  requireAdmin,
+  validateRequest({ body: SetFeaturedProductSchema }),
+  asyncHandler(productController.setFeatured.bind(productController))
 );
 
 router.post(

@@ -1,14 +1,24 @@
 import React, { useState } from 'react';
 import { ShoppingBag, Menu, X, Shield, PackageCheck } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { useCart } from '../../features/cart/context/CartContext';
 
 interface NavbarProps {
-  onOpenTracking: () => void;
-  onOpenAdmin: () => void;
+  onOpenTracking?: () => void;
+  onOpenAdmin?: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({ onOpenTracking, onOpenAdmin }) => {
   const { totalCount, openCart } = useCart();
+  const navigate = useNavigate();
+
+  const openBag = () => {
+    if (window.matchMedia('(max-width: 1023px)').matches) {
+      navigate('/bag');
+      return;
+    }
+    openCart();
+  };
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
@@ -22,34 +32,35 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenTracking, onOpenAdmin }) =
           {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
 
-        <a href="#" className="flex items-center gap-2 group">
+        <button onClick={() => navigate("/")} className="flex items-center gap-2 group">
           <span className="font-serif text-2xl lg:text-3xl font-semibold tracking-tight text-[#c9a96e] group-hover:text-white transition">
             CUSTOMRY
           </span>
           <span className="text-[10px] tracking-widest uppercase text-[#7f7668] hidden sm:inline-block border-l border-[#4d463a] pl-2 font-sans">
             Bespoke Atelier
           </span>
-        </a>
+        </button>
 
         <nav className="hidden lg:flex items-center gap-8 text-xs font-semibold tracking-widest uppercase text-gray-300">
-          <a href="#jewelry-accessories" className="hover:text-[#c9a96e] transition">
+          <button onClick={() => navigate("/categories/jewelry-accessories")} className="hover:text-[#c9a96e] transition">
             Jewelry
-          </a>
-          <a href="#journals-books" className="hover:text-[#c9a96e] transition">
+          </button>
+          <button onClick={() => navigate("/categories/journals-books")} className="hover:text-[#c9a96e] transition">
             Journals
-          </a>
-          <a href="#water-bottles" className="hover:text-[#c9a96e] transition">
+          </button>
+          <button onClick={() => navigate("/categories/water-bottles")} className="hover:text-[#c9a96e] transition">
             Bottles
-          </a>
-          <a href="#gifts-gift-boxes" className="hover:text-[#c9a96e] transition">
+          </button>
+          <button onClick={() => navigate("/categories/gift-boxes")} className="hover:text-[#c9a96e] transition">
             Gift Boxes
-          </a>
-          <a href="#wristwatches" className="hover:text-[#c9a96e] transition">
+          </button>
+          <button onClick={() => navigate("/categories/wristwatches")} className="hover:text-[#c9a96e] transition">
             Watches
-          </a>
+          </button>
         </nav>
 
         <div className="flex items-center gap-4">
+          {onOpenTracking && (
           <button
             onClick={onOpenTracking}
             className="flex items-center gap-1.5 text-xs text-[#c9a96e] hover:text-white transition px-3 py-1.5 rounded-full border border-[#745a27]/40 hover:border-[#c9a96e]"
@@ -57,9 +68,10 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenTracking, onOpenAdmin }) =
             <PackageCheck size={16} />
             <span className="hidden sm:inline">Track Order</span>
           </button>
+          )}
 
           <button
-            onClick={openCart}
+            onClick={openBag}
             className="relative p-2 text-[#c9a96e] hover:text-white transition"
             aria-label="Cart"
           >
@@ -71,6 +83,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenTracking, onOpenAdmin }) =
             )}
           </button>
 
+          {onOpenAdmin && (
           <button
             onClick={onOpenAdmin}
             className="p-2 text-gray-400 hover:text-[#c9a96e] transition ml-1"
@@ -78,27 +91,28 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenTracking, onOpenAdmin }) =
           >
             <Shield size={18} />
           </button>
+          )}
         </div>
       </div>
 
       {mobileMenuOpen && (
         <div className="lg:hidden bg-[#1b1c1c] border-b border-[#303030] px-6 py-6 space-y-4">
           <nav className="flex flex-col space-y-3 text-xs font-semibold tracking-widest uppercase text-gray-300">
-            <a href="#jewelry-accessories" onClick={() => setMobileMenuOpen(false)} className="hover:text-[#c9a96e]">
+            <button onClick={() => { setMobileMenuOpen(false); navigate("/categories/jewelry-accessories"); }} className="text-left hover:text-[#c9a96e]">
               Jewelry & Accessories
-            </a>
-            <a href="#journals-books" onClick={() => setMobileMenuOpen(false)} className="hover:text-[#c9a96e]">
+            </button>
+            <button onClick={() => { setMobileMenuOpen(false); navigate("/categories/journals-books"); }} className="text-left hover:text-[#c9a96e]">
               Journals & Books
-            </a>
-            <a href="#water-bottles" onClick={() => setMobileMenuOpen(false)} className="hover:text-[#c9a96e]">
+            </button>
+            <button onClick={() => { setMobileMenuOpen(false); navigate("/categories/water-bottles"); }} className="text-left hover:text-[#c9a96e]">
               Water Bottles
-            </a>
-            <a href="#gifts-gift-boxes" onClick={() => setMobileMenuOpen(false)} className="hover:text-[#c9a96e]">
+            </button>
+            <button onClick={() => { setMobileMenuOpen(false); navigate("/categories/gift-boxes"); }} className="text-left hover:text-[#c9a96e]">
               Gifts & Gift Boxes
-            </a>
-            <a href="#wristwatches" onClick={() => setMobileMenuOpen(false)} className="hover:text-[#c9a96e]">
+            </button>
+            <button onClick={() => { setMobileMenuOpen(false); navigate("/categories/wristwatches"); }} className="text-left hover:text-[#c9a96e]">
               Wristwatches
-            </a>
+            </button>
           </nav>
         </div>
       )}

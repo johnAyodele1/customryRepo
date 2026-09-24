@@ -8,6 +8,16 @@ export class ProductController {
     return sendSuccess(res, result.data, 200, result.pagination);
   }
 
+  async getFeaturedProducts(req: Request, res: Response) {
+    const products = await productService.getFeaturedProducts(req.query as any);
+    return sendSuccess(res, products);
+  }
+
+  async setFeatured(req: Request, res: Response) {
+    const product = await productService.setFeatured(req.params.id, Boolean(req.body.isFeatured));
+    return sendSuccess(res, product);
+  }
+
   async getProductBySlug(req: Request, res: Response) {
     const product = await productService.getProductBySlug(req.params.slug);
     return sendSuccess(res, product);

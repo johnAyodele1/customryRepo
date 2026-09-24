@@ -1,10 +1,31 @@
 import { productRepository } from './product.repository';
-import { CreateProductInput, UpdateProductInput, ProductQueryInput } from '@customry/contracts';
+import { CreateProductInput, UpdateProductInput, ProductQueryInput, FeaturedProductQueryInput } from '@customry/contracts';
 import { ConflictError, NotFoundError, ValidationError } from '../../shared/errors';
 
 export class ProductService {
   async getProducts(query: ProductQueryInput) {
     return productRepository.findMany(query);
+  }
+
+  async getFeaturedProducts(query: FeaturedProductQueryInput) {
+    return productRepository.findFeatured(query.categoryCode, query.limit);
+  }
+
+  async setFeatured(id: string, isFeatured: boolean) {
+    const product = await productRepository.findById(id);
+    if (!product) throw new NotFoundError('Product not found');
+
+    if (isFeatured && !product.isFeatured) {
+      const count = await productRepository.countFeatured(product.categoryCode);
+      if (count >= 4) {
+        throw new ConflictError('A category can have a maximum of 4 featured products');
+      }
+      if (product.status !== 'PUBLISHED') {
+        throw new ValidationError('Only published products can be featured');
+      }
+    }
+
+    return productRepository.setFeatured(id, isFeatured);
   }
 
   async getProductById(id: string) {

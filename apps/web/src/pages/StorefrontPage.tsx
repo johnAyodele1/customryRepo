@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
 import { Navbar } from '../components/layout/Navbar';
 import { Hero } from '../components/layout/Hero';
 import { Footer } from '../components/layout/Footer';
@@ -14,6 +15,7 @@ interface StorefrontPageProps {
 }
 
 export const StorefrontPage: React.FC<StorefrontPageProps> = ({ onOpenAdmin }) => {
+  const navigate = useNavigate();
   const [selectedProduct, setSelectedProduct] = useState<any | null>(null);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
   const [trackingOpen, setTrackingOpen] = useState(false);
@@ -27,14 +29,31 @@ export const StorefrontPage: React.FC<StorefrontPageProps> = ({ onOpenAdmin }) =
     },
   });
 
-  const { data: products = [] } = useQuery({
-    queryKey: ['products'],
+  const { data: featuredByCategory = {} } = useQuery({
+    queryKey: ['homepage-featured', categories.map((cat: any) => cat.code).join(',')],
+    enabled: categories.length > 0,
     queryFn: async () => {
-      const res = await fetch('/api/products?limit=100');
-      const data = await res.json();
-      return data.data || [];
+      const entries = await Promise.all(
+        categories.map(async (category: any) => {
+          const res = await fetch(
+            `/api/products/featured?categoryCode=${category.code}&limit=4`
+          );
+          const data = await res.json();
+          return [category.code, data.data || []] as const;
+        })
+      );
+
+      return Object.fromEntries(entries);
     },
   });
+
+  const openProduct = (product: any) => {
+    if (window.matchMedia('(max-width: 1023px)').matches) {
+      navigate(`/products/${product.slug}`);
+    } else {
+      setSelectedProduct(product);
+    }
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-surface text-on-surface">
@@ -46,46 +65,70 @@ export const StorefrontPage: React.FC<StorefrontPageProps> = ({ onOpenAdmin }) =
       <main className="flex-1">
         <Hero />
 
-        <section className="max-w-container mx-auto px-6 lg:px-16 py-16 space-y-24" id="catalogue">
-          {categories.map((cat: any) => {
-            const categoryProducts = products.filter(
-              (p: any) => p.categoryCode === cat.code
-            );
+        <section
+          className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-16 sm:py-20"
+          id="catalogue"
+        >
+          <div className="max-w-2xl mb-12">
+            <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-[#745a27]">
+              The Customry Catalogue
+            </span>
+            <h2 className="font-serif text-4xl sm:text-5xl font-semibold text-[#1b1c1c] mt-2">
+              Collections, not clutter.
+            </h2>
+            <p className="mt-4 text-sm leading-7 text-[#5c5549]">
+              Explore each collection independently. Featured pieces are curated by the atelier,
+              while the full catalogue lives inside its own category experience.
+            </p>
+          </div>
 
-            return (
-              <div key={cat.code} id={cat.slug} className="scroll-mt-24 space-y-8">
-                <div className="flex flex-col sm:flex-row sm:items-end justify-between border-b border-[#d0c5b5] pb-4 gap-2">
-                  <div>
-                    <span className="text-[10px] font-semibold uppercase tracking-[0.25em] text-[#745a27]">
-                      Category Collection
-                    </span>
-                    <h2 className="font-serif text-3xl font-semibold text-[#1b1c1c]">
-                      {cat.name}
-                    </h2>
+          <div className="space-y-20">
+            {categories.map((category: any) => {
+              const featured = featuredByCategory[category.code] || [];
+
+              return (
+                <section key={category.code} className="scroll-mt-24">
+                  <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-[#d0c5b5] pb-5">
+                    <div>
+                      <span className="text-[10px] font-semibold uppercase tracking-[0.25em] text-[#745a27]">
+                        Collection
+                      </span>
+                      <h3 className="font-serif text-3xl font-semibold text-[#1b1c1c] mt-1">
+                        {category.name}
+                      </h3>
+                    </div>
+
+                    <button
+                      onClick={() => navigate(`/categories/${category.slug}`)}
+                      className="self-start sm:self-auto text-[10px] font-semibold uppercase tracking-[0.2em] text-[#745a27] hover:text-[#1b1c1c] transition"
+                    >
+                      View entire collection →
+                    </button>
                   </div>
-                  <p className="text-xs text-[#4d463a] max-w-md font-sans">
-                    {cat.description}
+
+                  <p className="max-w-2xl text-xs leading-6 text-[#6c6458] mt-4 mb-6">
+                    {category.description}
                   </p>
-                </div>
 
-                {categoryProducts.length === 0 ? (
-                  <div className="p-8 text-center bg-surface-container-low rounded-2xl border border-outline-variant/30 text-xs text-[#7f7668]">
-                    No products currently published in this collection.
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    {categoryProducts.map((product: any) => (
-                      <ProductCard
-                        key={product.id}
-                        product={product}
-                        onSelect={(p) => setSelectedProduct(p)}
-                      />
-                    ))}
-                  </div>
-                )}
-              </div>
-            );
-          })}
+                  {featured.length > 0 ? (
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
+                      {featured.map((product: any) => (
+                        <ProductCard
+                          key={product.id}
+                          product={product}
+                          onSelect={openProduct}
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="rounded-3xl border border-[#d0c5b5] bg-[#f6f3f2] px-6 py-10 text-center text-xs text-[#7f7668]">
+                      The atelier is preparing featured pieces for this collection.
+                    </div>
+                  )}
+                </section>
+              );
+            })}
+          </div>
         </section>
       </main>
 

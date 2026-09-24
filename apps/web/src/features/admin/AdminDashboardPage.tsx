@@ -9,6 +9,7 @@ import {
   LogOut,
   Plus,
   X,
+  Star,
 } from 'lucide-react';
 
 interface AdminDashboardPageProps {
@@ -106,6 +107,21 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({
       return res.json();
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['adminProducts'] }),
+  });
+
+  const featureProductMutation = useMutation({
+    mutationFn: async ({ productId, isFeatured }: { productId: string; isFeatured: boolean }) => {
+      const res = await fetch(`/api/products/${productId}/featured`, {
+        method: 'PATCH',
+        headers: authHeaders,
+        body: JSON.stringify({ isFeatured }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error?.message || 'Failed to update featured status');
+      return data.data;
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['adminProducts'] }),
+    onError: (error: Error) => alert(error.message),
   });
 
   const archiveProductMutation = useMutation({
@@ -341,6 +357,26 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({
                           >
                             {p.status}
                           </span>
+                        </td>
+                        <td className="p-4">
+                          <button
+                            disabled={featureProductMutation.isPending}
+                            onClick={() =>
+                              featureProductMutation.mutate({
+                                productId: p.id,
+                                isFeatured: !p.isFeatured,
+                              })
+                            }
+                            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-semibold uppercase tracking-wider transition ${
+                              p.isFeatured
+                                ? 'bg-[#745a27] text-white'
+                                : 'bg-[#f6f3f2] text-[#7f7668] hover:text-[#745a27]'
+                            }`}
+                            title={p.isFeatured ? 'Remove from featured' : 'Feature product'}
+                          >
+                            <Star size={12} fill={p.isFeatured ? 'currentColor' : 'none'} />
+                            {p.isFeatured ? 'Featured' : 'Feature'}
+                          </button>
                         </td>
                         <td className="p-4 text-right space-x-2">
                           {p.status !== 'PUBLISHED' && (
