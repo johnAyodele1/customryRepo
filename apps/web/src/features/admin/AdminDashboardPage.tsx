@@ -152,7 +152,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({
       if (!adjustInventoryProduct) return;
 
       const trimmedDelta = inventoryDelta.trim();
-      if (!/^[+-]?\\d+$/.test(trimmedDelta) || Number(trimmedDelta) === 0) {
+      if (!/^[+-]?\d+$/.test(trimmedDelta) || Number(trimmedDelta) === 0) {
         throw new Error('Quantity delta must be a non-zero whole number, such as +5 or -2');
       }
 
