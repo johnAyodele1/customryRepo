@@ -41,8 +41,8 @@ export const OrderTrackingModal: React.FC<OrderTrackingModalProps> = ({ onClose 
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-[#1b1c1c]/80 backdrop-blur-md flex items-start sm:items-center justify-center px-4 py-6 sm:p-6">
-      <div className="bg-surface text-on-surface max-w-xl w-full max-h-[calc(100dvh-3rem)] rounded-3xl shadow-2xl overflow-y-auto border border-outline-variant relative sm:my-6">
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-[#1b1c1c]/80 backdrop-blur-md flex items-center justify-center p-4 sm:p-6">
+      <div className="bg-surface text-on-surface max-w-xl w-full rounded-3xl shadow-2xl overflow-hidden border border-outline-variant relative my-8">
         <div className="p-6 bg-[#1b1c1c] text-white flex items-center justify-between border-b border-[#303030]">
           <div className="flex items-center gap-2">
             <Package size={20} className="text-[#c9a96e]" />
@@ -57,19 +57,19 @@ export const OrderTrackingModal: React.FC<OrderTrackingModalProps> = ({ onClose 
         </div>
 
         <div className="p-6 sm:p-8 space-y-6">
-          <form onSubmit={handleTrack} className="flex flex-col sm:flex-row gap-2">
+          <form onSubmit={handleTrack} className="flex gap-2">
             <input
               type="text"
               required
               value={orderNumber}
               onChange={(e) => setOrderNumber(e.target.value)}
               placeholder="Enter Order Number (e.g. CST-882194-1024)"
-              className="min-w-0 w-full flex-1 p-3 text-[10px] sm:text-xs bg-white border border-[#7f7668]/40 rounded-xl text-xs focus:border-[#745a27] focus:outline-none font-mono overflow-hidden sm:overflow-visible"
+              className="min-w-0 flex-1 p-3 text-[10px] sm:text-xs bg-white border border-[#7f7668]/40 rounded-xl focus:border-[#745a27] focus:outline-none font-mono"
             />
             <button
               type="submit"
               disabled={loading}
-              className="shrink-0 w-full sm:w-auto bg-[#745a27] hover:bg-[#c9a96e] text-white hover:text-[#1b1c1c] font-semibold text-xs uppercase tracking-wider px-6 py-3 rounded-xl transition flex items-center gap-1.5"
+              className="shrink-0 bg-[#745a27] hover:bg-[#c9a96e] text-white hover:text-[#1b1c1c] font-semibold text-xs uppercase tracking-wider px-6 py-3 rounded-xl transition flex items-center gap-1.5"
             >
               <Search size={16} />
               {loading ? 'Searching...' : 'Track'}
@@ -85,15 +85,15 @@ export const OrderTrackingModal: React.FC<OrderTrackingModalProps> = ({ onClose 
 
           {order && (
             <div className="space-y-6 border-t border-outline-variant/40 pt-6 animate-in fade-in duration-200">
-              <div className="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-start">
+              <div className="flex justify-between items-start">
                 <div>
                   <span className="text-[10px] font-semibold uppercase tracking-widest text-[#7f7668]">
                     Order Reference
                   </span>
-                  <h3 className="font-serif text-xl font-bold text-[#1b1c1c] break-words overflow-wrap-anywhere">{order.orderNumber}</h3>
+                  <h3 className="font-serif text-xl font-bold text-[#1b1c1c] break-words">{order.orderNumber}</h3>
                 </div>
 
-                <div className="text-left sm:text-right self-start sm:self-auto">
+                <div className="text-right">
                   <span
                     className={`inline-block max-w-full px-2 sm:px-3 py-1 rounded-full text-[9px] sm:text-[10px] font-bold uppercase tracking-wider break-words ${
                       order.status === 'COMPLETED'
