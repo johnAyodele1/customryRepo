@@ -30,7 +30,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({
 
   const [createProductOpen, setSetCreateProductOpen] = useState(false);
   const [adjustInventoryProduct, setAdjustInventoryProduct] = useState<any | null>(null);
-  const [inventoryDelta, setInventoryDelta] = useState(1);
+  const [inventoryDelta, setInventoryDelta] = useState('1');
   const [inventoryReason, setInventoryReason] = useState('Restock shipment');
 
   const [pName, setPName] = useState('');
@@ -150,13 +150,26 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({
   const adjustInventoryMutation = useMutation({
     mutationFn: async () => {
       if (!adjustInventoryProduct) return;
+
+      const trimmedDelta = inventoryDelta.trim();
+      if (!/^[+-]?\\d+$/.test(trimmedDelta) || Number(trimmedDelta) === 0) {
+        throw new Error('Quantity delta must be a non-zero whole number, such as +5 or -2');
+      }
+
+      const productId = adjustInventoryProduct._id || adjustInventoryProduct.id;
+      if (!productId) {
+        throw new Error('Unable to determine the product ID for this adjustment');
+      }
+
+      const quantityDelta = Number(trimmedDelta);
+
       const res = await fetch('/api/inventory/adjust', {
         method: 'POST',
         headers: authHeaders,
         body: JSON.stringify({
-          productId: adjustInventoryProduct.id,
-          quantityDelta: Number(inventoryDelta),
-          reason: inventoryReason,
+          productId,
+          quantityDelta,
+          reason: inventoryReason.trim(),
         }),
       });
       const data = await res.json();
@@ -165,9 +178,11 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({
     },
     onSuccess: () => {
       setAdjustInventoryProduct(null);
+      setInventoryDelta('1');
       queryClient.invalidateQueries({ queryKey: ['adminProducts'] });
       queryClient.invalidateQueries({ queryKey: ['adminDashboardStats'] });
     },
+    onError: (error: Error) => alert(error.message),
   });
 
   const handleCreateProduct = async (e: React.FormEvent) => {
@@ -566,11 +581,17 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({
                 Quantity Delta (e.g. +5 for addition, -2 for reduction)
               </label>
               <input
-                type="number"
+                type="text"
+                inputMode="numeric"
                 value={inventoryDelta}
-                onChange={(e) => setInventoryDelta(Number(e.target.value))}
+                onChange={(e) => setInventoryDelta(e.target.value)}
                 className="w-full p-2.5 border border-outline-variant rounded-xl text-xs"
+                placeholder="+5 or -2"
+                aria-describedby="inventory-delta-help"
               />
+              <p id="inventory-delta-help" className="mt-1 text-[10px] text-[#7f7668]">
+                Use a positive value to add stock or a negative value to reduce it.
+              </p>
             </div>
 
             <div>
