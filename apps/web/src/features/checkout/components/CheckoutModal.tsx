@@ -89,8 +89,8 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-[#1b1c1c]/80 backdrop-blur-md flex items-center justify-center p-4 sm:p-6">
-      <div className="bg-surface text-on-surface max-w-2xl w-full rounded-3xl shadow-2xl overflow-hidden border border-outline-variant relative my-8">
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-[#1b1c1c]/80 backdrop-blur-md flex items-start sm:items-center justify-center px-4 py-6 sm:p-6">
+      <div className="bg-surface text-on-surface max-w-2xl w-full max-h-[calc(100dvh-3rem)] rounded-3xl shadow-2xl overflow-y-auto border border-outline-variant relative sm:my-6">
         <div className="p-6 bg-[#1b1c1c] text-white flex items-center justify-between border-b border-[#303030]">
           <h2 className="font-serif text-xl font-semibold text-[#c9a96e]">
             {completedOrder ? 'Order Confirmed' : 'Bespoke Order Checkout'}

@@ -17,10 +17,10 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ onCheckout, embedded = f
 
   return (
     <div className={embedded
-      ? 'min-h-[calc(100vh-5rem)] bg-[#f6f3f2] py-6 sm:py-10'
+      ? 'min-h-[calc(100vh-5rem)] bg-[#f6f3f2] py-0 sm:py-10'
       : 'fixed inset-0 z-50 overflow-hidden bg-[#1b1c1c]/70 backdrop-blur-sm flex justify-end'}>
       <div className={embedded
-        ? 'max-w-4xl mx-auto w-full bg-surface min-h-[calc(100vh-8rem)] shadow-sm sm:rounded-3xl overflow-hidden border border-outline-variant/40 flex flex-col justify-between'
+        ? 'max-w-4xl mx-auto w-full bg-surface min-h-[calc(100vh-5rem)] sm:min-h-[calc(100vh-8rem)] shadow-sm sm:rounded-3xl overflow-hidden border border-outline-variant/40 flex flex-col justify-between'
         : 'w-full max-w-md bg-surface h-full shadow-2xl flex flex-col justify-between border-l border-outline-variant animate-in slide-in-from-right duration-300'}>
         <div className="p-6 border-b border-outline-variant/40 flex items-center justify-between bg-[#1b1c1c] text-white">
           <div className="flex items-center gap-2">
