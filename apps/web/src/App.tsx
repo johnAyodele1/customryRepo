@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Route, Routes } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Route, Routes, useLocation } from 'react-router-dom';
 import { CartProvider } from './features/cart/context/CartContext';
 import { StorefrontPage } from './pages/StorefrontPage';
 import { AdminLoginPage } from './features/admin/AdminLoginPage';
@@ -7,6 +7,16 @@ import { AdminDashboardPage } from './features/admin/AdminDashboardPage';
 import { CategoryPage } from './pages/CategoryPage';
 import { ProductPage } from './pages/ProductPage';
 import { BagPage } from './pages/BagPage';
+
+const ScrollToTop: React.FC = () => {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+  }, [pathname]);
+
+  return null;
+};
 
 export const App: React.FC = () => {
   const [view, setView] = useState<'storefront' | 'admin_login' | 'admin_dashboard'>('storefront');
@@ -36,22 +46,14 @@ export const App: React.FC = () => {
 
   return (
     <CartProvider>
+      <ScrollToTop />
+
       {view === 'storefront' && (
         <Routes>
-          <Route
-            path="/"
-            element={
-              <StorefrontPage
-                onOpenAdmin={() => {
-                  if (adminToken && adminUser) {
-                    setView('admin_dashboard');
-                  } else {
-                    setView('admin_login');
-                  }
-                }}
-              />
-            }
-          />
+          <Route path="/" element={<StorefrontPage onOpenAdmin={() => {
+            if (adminToken && adminUser) setView('admin_dashboard');
+            else setView('admin_login');
+          }} />} />
           <Route path="/categories/:slug" element={<CategoryPage />} />
           <Route path="/products/:slug" element={<ProductPage />} />
           <Route path="/bag" element={<BagPage />} />
@@ -59,10 +61,7 @@ export const App: React.FC = () => {
       )}
 
       {view === 'admin_login' && (
-        <AdminLoginPage
-          onLoginSuccess={handleLoginSuccess}
-          onReturnToStore={() => setView('storefront')}
-        />
+        <AdminLoginPage onLoginSuccess={handleLoginSuccess} onReturnToStore={() => setView('storefront')} />
       )}
 
       {view === 'admin_dashboard' && adminToken && (
