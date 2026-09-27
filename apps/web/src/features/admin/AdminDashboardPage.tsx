@@ -582,7 +582,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({
               </label>
               <input
                 type="text"
-                inputMode="numeric"
+                inputMode="text"
                 value={inventoryDelta}
                 onChange={(e) => setInventoryDelta(e.target.value)}
                 className="w-full p-2.5 border border-outline-variant rounded-xl text-xs"
