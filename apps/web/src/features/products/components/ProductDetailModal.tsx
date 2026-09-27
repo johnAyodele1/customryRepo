@@ -22,6 +22,9 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
   const [quantity, setQuantity] = useState(product.minQuantity || 1);
   const [customizationValues, setCustomizationValues] = useState<Record<string, string>>({});
   const [validationError, setValidationError] = useState<string | null>(null);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [touchStartX, setTouchStartX] = useState<number | null>(null);
+  const [touchCurrentX, setTouchCurrentX] = useState<number | null>(null);
 
   useEffect(() => {
     if (product.customizationFields) {
@@ -36,9 +39,73 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
   }, [product]);
 
   const selectedVariant = product.variants?.find((v: any) => v.id === selectedVariantId);
+  const productImages = Array.isArray(product.images) ? product.images.filter(Boolean) : [];
+  const variantImages = Array.isArray(selectedVariant?.images)
+    ? selectedVariant.images.filter(Boolean)
+    : [];
+  const galleryImages = variantImages.length > 0 ? variantImages : productImages;
+  const currentImageIndex = Math.min(selectedImageIndex, Math.max(galleryImages.length - 1, 0));
+  const currentImage =
+    galleryImages[currentImageIndex] ||
+    'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&q=80&w=800';
   const currentPrice = selectedVariant?.price ?? product.basePrice;
   const currentStock = selectedVariant?.stock ?? product.stock;
   const isOutOfStock = currentStock <= 0;
+
+  useEffect(() => {
+    setSelectedImageIndex(0);
+    setTouchStartX(null);
+    setTouchCurrentX(null);
+  }, [product, selectedVariantId]);
+
+  const goToImage = (index: number) => {
+    if (galleryImages.length === 0) return;
+    setSelectedImageIndex(Math.max(0, Math.min(index, galleryImages.length - 1)));
+  };
+
+  const goToNextImage = () => {
+    if (galleryImages.length < 2) return;
+    setSelectedImageIndex((index) => (index + 1) % galleryImages.length);
+  };
+
+  const goToPreviousImage = () => {
+    if (galleryImages.length < 2) return;
+    setSelectedImageIndex(
+      (index) => (index - 1 + galleryImages.length) % galleryImages.length
+    );
+  };
+
+  const handleTouchStart = (event: React.TouchEvent<HTMLDivElement>) => {
+    setTouchStartX(event.touches[0]?.clientX ?? null);
+    setTouchCurrentX(event.touches[0]?.clientX ?? null);
+  };
+
+  const handleTouchMove = (event: React.TouchEvent<HTMLDivElement>) => {
+    if (touchStartX === null) return;
+    setTouchCurrentX(event.touches[0]?.clientX ?? null);
+  };
+
+  const handleTouchEnd = () => {
+    if (touchStartX === null || touchCurrentX === null) {
+      setTouchStartX(null);
+      setTouchCurrentX(null);
+      return;
+    }
+
+    const swipeDistance = touchStartX - touchCurrentX;
+    const minimumSwipeDistance = 40;
+
+    if (Math.abs(swipeDistance) >= minimumSwipeDistance) {
+      if (swipeDistance > 0) {
+        goToNextImage();
+      } else {
+        goToPreviousImage();
+      }
+    }
+
+    setTouchStartX(null);
+    setTouchCurrentX(null);
+  };
 
   const handleCustomizationChange = (key: string, value: string) => {
     setCustomizationValues((prev) => ({ ...prev, [key]: value }));
@@ -95,15 +162,64 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
         </button>
 
         <div className={mode === 'modal' ? 'grid grid-cols-1 md:grid-cols-2 max-h-[85vh] overflow-y-auto' : 'grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-14'}>
-          <div className="bg-surface-container p-6 flex items-center justify-center relative">
-            <img
-              src={
-                product.images[0] ||
-                'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&q=80&w=800'
-              }
-              alt={product.name}
-              className="w-full h-full max-h-[620px] object-cover rounded-2xl shadow-md"
-            />
+          <div
+            className="bg-surface-container p-4 sm:p-6 flex flex-col items-center justify-center relative"
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+          >
+            <div className="relative w-full">
+              <img
+                src={currentImage}
+                alt={`${product.name} - image ${currentImageIndex + 1} of ${Math.max(galleryImages.length, 1)}`}
+                className="w-full h-full max-h-[620px] object-cover rounded-2xl shadow-md select-none touch-pan-y"
+                draggable={false}
+              />
+
+              {galleryImages.length > 1 && (
+                <>
+                  <button
+                    type="button"
+                    onClick={goToPreviousImage}
+                    className="absolute left-3 top-1/2 -translate-y-1/2 h-9 w-9 rounded-full bg-[#1b1c1c]/65 text-white flex items-center justify-center hover:bg-[#1b1c1c]/85 transition"
+                    aria-label="Previous image"
+                  >
+                    ‹
+                  </button>
+                  <button
+                    type="button"
+                    onClick={goToNextImage}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 h-9 w-9 rounded-full bg-[#1b1c1c]/65 text-white flex items-center justify-center hover:bg-[#1b1c1c]/85 transition"
+                    aria-label="Next image"
+                  >
+                    ›
+                  </button>
+
+                  <span className="absolute top-3 right-3 rounded-full bg-[#1b1c1c]/70 px-2.5 py-1 text-[10px] font-semibold text-white">
+                    {currentImageIndex + 1} / {galleryImages.length}
+                  </span>
+                </>
+              )}
+            </div>
+
+            {galleryImages.length > 1 && (
+              <div className="flex items-center justify-center gap-1.5 pt-4" aria-label="Product images">
+                {galleryImages.map((image: string, index: number) => (
+                  <button
+                    key={`${image}-${index}`}
+                    type="button"
+                    onClick={() => goToImage(index)}
+                    className={`h-2 rounded-full transition-all duration-200 ${
+                      index === currentImageIndex
+                        ? 'w-5 bg-[#745a27]'
+                        : 'w-2 bg-[#b8aea0] hover:bg-[#745a27]/60'
+                    }`}
+                    aria-label={`Go to image ${index + 1}`}
+                    aria-current={index === currentImageIndex ? 'true' : undefined}
+                  />
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="p-2 sm:p-4 lg:p-8 flex flex-col justify-between space-y-6">
