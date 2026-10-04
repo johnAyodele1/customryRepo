@@ -80,7 +80,9 @@ export const CreateProductSchema = z.object({
 
 export type CreateProductInput = z.infer<typeof CreateProductSchema>;
 
-export const UpdateProductSchema = CreateProductSchema.partial();
+export const UpdateProductSchema = CreateProductSchema.omit({ variants: true }).partial().extend({
+  variants: z.array(VariantSchema).optional(),
+});
 export type UpdateProductInput = z.infer<typeof UpdateProductSchema>;
 
 export const ProductQuerySchema = z.object({
