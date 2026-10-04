@@ -34,12 +34,12 @@ export class AdminService {
     const totalRevenue = revenueResult[0]?.totalRevenue || 0;
 
     const recentCustomers = recentOrders.map((order) => ({
-      name: o.customer.fullName,
-      phone: o.customer.phone,
-      email: o.customer.email,
-      orderNumber: o.orderNumber,
-      total: o.total,
-      createdAt: o.createdAt,
+      name: order.customer.fullName,
+      phone: order.customer.phone,
+      email: order.customer.email,
+      orderNumber: order.orderNumber,
+      total: order.total,
+      createdAt: order.createdAt,
     }));
 
     const recentOrdersForResponse = recentOrders.map((order) => ({
