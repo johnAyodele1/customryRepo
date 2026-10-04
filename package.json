@@ -7,7 +7,7 @@
     "apps/*"
   ],
   "scripts": {
-    "build": "npm run build --workspaces --if-present",
+    "build": "npm run build --workspace=@customry/contracts && npm run build --workspace=@customry/api",
     "test": "npm run test --workspaces --if-present",
     "seed": "npm run seed --workspace=apps/api",
     "dev:api": "npm run dev --workspace=apps/api",
