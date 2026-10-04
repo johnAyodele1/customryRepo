@@ -1,4 +1,5 @@
 import { productRepository } from './product.repository';
+import { IProductDocument } from './product.model';
 import { CreateProductInput, UpdateProductInput, ProductQueryInput, FeaturedProductQueryInput } from '@customry/contracts';
 import { ConflictError, NotFoundError, ValidationError } from '../../shared/errors';
 
@@ -94,7 +95,7 @@ export class ProductService {
   }
 
   validateCustomization(
-    product: any,
+    product: IProductDocument,
     customization: Record<string, string>
   ) {
     if (!product.customizationFields || product.customizationFields.length === 0) {
