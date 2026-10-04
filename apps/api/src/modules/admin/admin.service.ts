@@ -33,13 +33,36 @@ export class AdminService {
 
     const totalRevenue = revenueResult[0]?.totalRevenue || 0;
 
-    const recentCustomers = recentOrders.map((o: any) => ({
+    const recentCustomers = recentOrders.map((order) => ({
       name: o.customer.fullName,
       phone: o.customer.phone,
       email: o.customer.email,
       orderNumber: o.orderNumber,
       total: o.total,
       createdAt: o.createdAt,
+    }));
+
+    const recentOrdersForResponse = recentOrders.map((order) => ({
+      orderNumber: order.orderNumber,
+      customer: {
+        fullName: order.customer.fullName,
+        phone: order.customer.phone,
+        email: order.customer.email,
+        deliveryAddress: order.customer.deliveryAddress,
+      },
+      items: order.items,
+      subtotal: order.subtotal,
+      deliveryFee: order.deliveryFee,
+      discount: order.discount,
+      total: order.total,
+      currency: order.currency,
+      status: order.status,
+      paymentStatus: order.paymentStatus,
+      paymentMethod: order.paymentMethod,
+      paymentReference: order.paymentReference,
+      orderNotes: order.orderNotes,
+      createdAt: order.createdAt,
+      updatedAt: order.updatedAt,
     }));
 
     return {
@@ -52,8 +75,8 @@ export class AdminService {
       totalRevenue,
       totalProducts,
       lowStockProducts,
-      recentOrders: recentOrders as any,
-      recentCustomers: recentCustomers as any,
+      recentOrders: recentOrdersForResponse,
+      recentCustomers,
     };
   }
 }
