@@ -115,7 +115,7 @@ export class ProductRepository {
     if (data.variants) {
       updateData.variants = data.variants.map((v, i) => ({
         ...v,
-        id: (v as any).id || `var_${Date.now()}_${i}`,
+        id: v.id || `var_${Date.now()}_${i}`,
         options: v.options || {},
       }));
     }
